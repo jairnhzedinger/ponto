@@ -4,7 +4,8 @@
   "description": "Sistema de gestão de ponto baseado em arquivos de batidas",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/server.js",
+    "start:cli": "node src/index.js",
     "test": "node --test"
   },
   "keywords": [
@@ -14,5 +15,8 @@
   ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
 }

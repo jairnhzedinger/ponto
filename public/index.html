@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Gestão de Ponto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.5/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="app-header">
+        <div class="app-title">
+          <h1>Painel de Gestão de Ponto</h1>
+          <p>Monitore batidas, colabore com a equipe e acompanhe tendências em tempo real.</p>
+        </div>
+        <div class="app-meta">
+          <span id="last-import">Última importação: -</span>
+          <button id="refresh-dashboard" class="button ghost" type="button">Atualizar painel</button>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <section class="summary-cards" aria-label="Resumo de indicadores">
+          <article class="summary-card">
+            <span class="summary-label">Batidas registradas</span>
+            <strong id="total-punches" class="summary-value">0</strong>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Colaboradores únicos</span>
+            <strong id="total-employees" class="summary-value">0</strong>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Média por colaborador</span>
+            <strong id="avg-per-employee" class="summary-value">0</strong>
+          </article>
+          <article class="summary-card">
+            <span class="summary-label">Período analisado</span>
+            <strong id="period" class="summary-value">-</strong>
+          </article>
+        </section>
+
+        <section class="panel-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Importação de arquivo</h2>
+              <p>Carregue arquivos de batidas no formato fornecido pelo relógio de ponto.</p>
+            </div>
+            <form id="import-form" class="form-grid">
+              <div class="form-field">
+                <label for="import-file">Arquivo (.txt)</label>
+                <input id="import-file" type="file" accept=".txt,.dat,.csv" />
+              </div>
+              <div class="form-field">
+                <label for="import-content">Ou cole o conteúdo manualmente</label>
+                <textarea id="import-content" placeholder="Cole aqui as linhas com 33 caracteres"></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="button primary">Importar batidas</button>
+                <span id="import-feedback" role="status" aria-live="polite"></span>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Novo registro manual</h2>
+              <p>Use esta opção para registrar uma batida pontual diretamente no painel.</p>
+            </div>
+            <form id="manual-form" class="form-grid">
+              <div class="form-field">
+                <label for="manual-employee">Matrícula/Identificador</label>
+                <input id="manual-employee" name="employeeId" required placeholder="Ex: 000018933400" />
+              </div>
+              <div class="form-field">
+                <label for="manual-date">Data</label>
+                <input id="manual-date" name="date" type="date" required />
+              </div>
+              <div class="form-field">
+                <label for="manual-time">Hora</label>
+                <input id="manual-time" name="time" type="time" required />
+              </div>
+              <div class="form-field">
+                <label for="manual-id">Identificador da batida (opcional)</label>
+                <input id="manual-id" name="punchId" placeholder="Deixe em branco para gerar automaticamente" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="button secondary">Registrar batida</button>
+                <span id="manual-feedback" role="status" aria-live="polite"></span>
+              </div>
+            </form>
+          </section>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Tendência diária de batidas</h2>
+            <p>Visualize a distribuição de batidas ao longo do tempo e identifique padrões rapidamente.</p>
+          </div>
+          <canvas id="timeline-chart" height="120"></canvas>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Colaboradores mais ativos</h2>
+            <p>Ordenado pelo volume de batidas registradas no período.</p>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Matrícula</th>
+                  <th>Total</th>
+                  <th>Primeira batida</th>
+                  <th>Última batida</th>
+                  <th>Detalhes por dia</th>
+                </tr>
+              </thead>
+              <tbody id="employees-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Últimas batidas registradas</h2>
+            <p>As dez batidas mais recentes adicionadas ao sistema.</p>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Hora</th>
+                  <th>Matrícula</th>
+                  <th>Identificador</th>
+                </tr>
+              </thead>
+              <tbody id="recent-table"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <span>Sistema de gestão de ponto • Ambiente de desenvolvimento</span>
+      </footer>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
