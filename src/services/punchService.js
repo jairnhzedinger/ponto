@@ -79,6 +79,7 @@ function importPunches(punches) {
 
   const payload = writeDatabase({
     punches: punchesToPersist,
+    employees: database.employees,
     meta: {
       ...database.meta,
       lastImport: new Date().toISOString()
@@ -119,6 +120,7 @@ function addPunch(punch) {
 
   writeDatabase({
     punches: punchesToPersist,
+    employees: database.employees,
     meta: {
       ...database.meta,
       lastImport: database.meta.lastImport ?? null
@@ -136,6 +138,10 @@ function listPunches() {
 function getDashboardData() {
   const database = readDatabase();
   const punches = [...database.punches];
+  const employeeNames =
+    database.employees && typeof database.employees === 'object'
+      ? database.employees
+      : {};
 
   punches.sort((a, b) => (a.timestamp < b.timestamp ? -1 : a.timestamp > b.timestamp ? 1 : 0));
 
@@ -177,6 +183,7 @@ function getDashboardData() {
 
   const employees = Array.from(employeesMap.values()).map((employee) => ({
     employeeId: employee.employeeId,
+    name: employeeNames?.[employee.employeeId] ?? null,
     totalPunches: employee.totalPunches,
     firstPunch: employee.firstPunch,
     lastPunch: employee.lastPunch,
@@ -219,10 +226,43 @@ function getDashboardData() {
   };
 }
 
+function setEmployeeName(employeeId, name) {
+  const database = readDatabase();
+  const id = String(employeeId ?? '').trim();
+
+  if (!id) {
+    throw new Error('O identificador do colaborador é obrigatório.');
+  }
+
+  const employees = {
+    ...(database.employees && typeof database.employees === 'object' ? database.employees : {})
+  };
+
+  const trimmedName = String(name ?? '').trim();
+
+  if (trimmedName) {
+    employees[id] = trimmedName;
+  } else {
+    delete employees[id];
+  }
+
+  writeDatabase({
+    punches: database.punches,
+    employees,
+    meta: database.meta
+  });
+
+  return {
+    employeeId: id,
+    name: trimmedName || null
+  };
+}
+
 module.exports = {
   addPunch,
   importPunches,
   importPunchesFromContent,
   listPunches,
-  getDashboardData
+  getDashboardData,
+  setEmployeeName
 };

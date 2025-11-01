@@ -4,7 +4,8 @@ const {
   listPunches,
   addPunch,
   importPunchesFromContent,
-  getDashboardData
+  getDashboardData,
+  setEmployeeName
 } = require('./services/punchService');
 
 const app = express();
@@ -54,6 +55,23 @@ app.post('/api/import', (req, res) => {
     res.json({
       message: 'Importação concluída com sucesso.',
       importResult,
+      dashboard
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/api/employees/:employeeId', (req, res) => {
+  try {
+    const { employeeId } = req.params;
+    const { name } = req.body ?? {};
+    const employee = setEmployeeName(employeeId, name);
+    const dashboard = getDashboardData();
+
+    res.json({
+      message: employee.name ? 'Nome do colaborador atualizado com sucesso.' : 'Nome do colaborador removido.',
+      employee,
       dashboard
     });
   } catch (error) {

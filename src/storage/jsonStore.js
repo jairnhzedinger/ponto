@@ -6,6 +6,7 @@ const DB_FILE = path.join(DATA_DIR, 'ponto.json');
 
 const DEFAULT_DATA = {
   punches: [],
+  employees: {},
   meta: {
     lastImport: null
   }
@@ -25,8 +26,13 @@ function readDatabase() {
   ensureDatabase();
   const content = fs.readFileSync(DB_FILE, 'utf8');
   const data = JSON.parse(content || '{}');
+  const employees =
+    data.employees && typeof data.employees === 'object' && !Array.isArray(data.employees)
+      ? data.employees
+      : {};
   return {
     punches: Array.isArray(data.punches) ? data.punches : [],
+    employees,
     meta: {
       lastImport: data.meta?.lastImport ?? null
     }
@@ -37,6 +43,10 @@ function writeDatabase(data) {
   ensureDatabase();
   const payload = {
     punches: Array.isArray(data.punches) ? data.punches : [],
+    employees:
+      data.employees && typeof data.employees === 'object' && !Array.isArray(data.employees)
+        ? data.employees
+        : {},
     meta: {
       lastImport: data.meta?.lastImport ?? null
     }
